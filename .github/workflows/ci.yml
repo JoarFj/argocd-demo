@@ -1,0 +1,45 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          # We need to fetch all history and tags for the git commands to work correctly
+          fetch-depth: 0
+
+      - name: Log in to the GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        id: build-and-push
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: ghcr.io/${{ github.repository }}:${{ github.sha }}
+
+      - name: Update Kubernetes manifest
+        run: |
+          sed -i "s|image: .*|image: ghcr.io/${{ github.repository }}:${{ github.sha }}|" k8s/deployment.yaml
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git add k8s/deployment.yaml
+          git commit -m "Update image to ${{ github.sha }}"
+          git push
