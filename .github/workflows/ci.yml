@@ -27,17 +27,21 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Convert repository name to lowercase
+        id: repo_lowercase
+        run: echo "name=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+
       - name: Build and push Docker image
         id: build-and-push
         uses: docker/build-push-action@v4
         with:
           context: .
           push: true
-          tags: ghcr.io/${{ github.repository }}:${{ github.sha }}
+          tags: ghcr.io/${{ steps.repo_lowercase.outputs.name }}:${{ github.sha }}
 
       - name: Update Kubernetes manifest
         run: |
-          sed -i "s|image: .*|image: ghcr.io/${{ github.repository }}:${{ github.sha }}|" k8s/deployment.yaml
+          sed -i "s|image: .*|image: ghcr.io/${{ steps.repo_lowercase.outputs.name }}:${{ github.sha }}|" k8s/deployment.yaml
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
           git add k8s/deployment.yaml
