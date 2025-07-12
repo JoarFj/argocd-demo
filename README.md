@@ -1,15 +1,19 @@
-# Argo CD Demo
+# Argo CD Python App Demo
 
-This repository contains a basic NGINX deployment and service, intended to be deployed via Argo CD on a local Kubernetes cluster using Kind (Kubernetes in Docker).
+This repository contains a simple Python Flask application, intended to be deployed via Argo CD on a local Kubernetes cluster using Kind (Kubernetes in Docker). It also includes a GitHub Actions CI/CD pipeline to automate image building and manifest updates.
 
 ## Project Structure
 
-- `k8s/`: Contains the Kubernetes manifests for the NGINX deployment and service.
-- `argocd-app.yaml`: The Argo CD Application manifest that tells Argo CD how to deploy the NGINX application from this repository.
+- `app.py`: The Python Flask application.
+- `Dockerfile`: Defines how to build the Docker image for the Python application.
+- `.dockerignore`: Specifies files to ignore when building the Docker image.
+- `k8s/`: Contains the Kubernetes manifests for the Python application deployment and service.
+- `argocd-app.yaml`: The Argo CD Application manifest that tells Argo CD how to deploy the Python application from this repository.
+- `.github/workflows/ci.yml`: GitHub Actions workflow for building, pushing, and updating Kubernetes manifests.
 
 ## Local Setup with Kind and Argo CD
 
-This guide will walk you through setting up a local Kubernetes cluster using Kind, installing Argo CD, and deploying the NGINX application.
+This guide will walk you through setting up a local Kubernetes cluster using Kind, installing Argo CD, and deploying the Python application.
 
 ### Prerequisites
 
@@ -136,19 +140,33 @@ kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.pas
 
 Use `admin` as the username and the retrieved password to log in.
 
-### 7. Deploy the NGINX Application
+### 7. Deploy the Python Application
 
-Once logged into Argo CD, you can deploy the NGINX application by applying the `argocd-app.yaml` manifest. This tells Argo CD to monitor this Git repository and deploy the `k8s/` manifests.
+Once logged into Argo CD, you can deploy the Python application by applying the `argocd-app.yaml` manifest. This tells Argo CD to monitor this Git repository and deploy the `k8s/` manifests.
 
 ```bash
 kubectl apply -f argocd-app.yaml
 ```
 
-Argo CD will now synchronize and deploy the NGINX application. You can observe its status in the Argo CD UI or using `kubectl`:
+Argo CD will now synchronize and deploy the Python application. You can observe its status in the Argo CD UI or using `kubectl`:
 
 ```bash
 kubectl get deployments -n default
 kubectl get services -n default
+```
+
+**Important Note on Argo CD Application Updates:**
+
+Changes to the `argocd-app.yaml` file itself (e.g., renaming the application) are not automatically picked up by Argo CD's GitOps sync process because this file defines the Argo CD Application resource, not the application's Kubernetes manifests. If you modify `argocd-app.yaml`, you must manually apply the changes to your cluster:
+
+```bash
+kubectl apply -f argocd-app.yaml
+```
+
+If you rename the application (e.g., from `nginx-app` to `python-app`), you will also need to delete the old application resource from Argo CD:
+
+```bash
+kubectl delete application <old-app-name> -n argocd
 ```
 
 ---
