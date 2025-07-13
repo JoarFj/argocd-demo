@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: my-python-app
-        image: ghcr.io/joarfj/argocd-demo:ac1024618e45e46c5e4fa38d6684ee3fc73f7a95
+        image: ghcr.io/joarfj/argocd-demo:1295346a1fa69d6c6c5347e54d533944003e633b
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080
