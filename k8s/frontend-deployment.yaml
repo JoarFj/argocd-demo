@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: frontend-app
-        image: ghcr.io/joarfj/argocd-demo-frontend:1dca075d4f5b833a73d2c7e1997e37fc65a4f547
+        image: ghcr.io/joarfj/argocd-demo-frontend:8648db432e6132ce29ba8b4201d331eef7ae9b39
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 80
