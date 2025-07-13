@@ -10,6 +10,13 @@ spec:
   - host: argocd-frontend.com
     http:
       paths:
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: backend-service
+            port:
+              number: 80
       - path: /
         pathType: Prefix
         backend:
