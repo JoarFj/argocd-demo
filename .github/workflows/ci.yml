@@ -49,6 +49,8 @@ jobs:
           file: ./frontend/Dockerfile
           push: true
           tags: ghcr.io/${{ steps.repo_lowercase.outputs.name }}-frontend:${{ github.sha }}
+          build-args: |
+            REACT_APP_API_URL=http://backend-service
 
       - name: Update Kubernetes manifests
         run: |
