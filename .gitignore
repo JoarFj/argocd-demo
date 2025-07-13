@@ -1,2 +1,9 @@
 kind-config.yaml
 argocd-ingress.yaml
+
+# Frontend build artifacts
+frontend/node_modules
+frontend/build
+
+# Docker Compose file (local development only)
+docker-compose.yml
