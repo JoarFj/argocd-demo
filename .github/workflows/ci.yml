@@ -29,7 +29,7 @@ jobs:
       - name: Convert repository name to lowercase
         id: repo_lowercase
         run: |
-          REPO_NAME_LOWERCASE="${{ github.repository | lower }}"
+          REPO_NAME_LOWERCASE="$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')"
           echo "name=$REPO_NAME_LOWERCASE" >> $GITHUB_OUTPUT
 
       - name: Build and push Backend Docker image
