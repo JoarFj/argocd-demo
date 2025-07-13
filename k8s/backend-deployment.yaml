@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: backend-app
-        image: ghcr.io/joarfj/argocd-demo-backend:6cb79d381ac87c2fd9187d1ed41fbc996a58cd5c
+        image: ghcr.io/joarfj/argocd-demo-backend:5ef32b493c2e341e703bfe1dd5c13305ce2edcd6
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080
