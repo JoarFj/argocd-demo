@@ -26,10 +26,6 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Convert repository name to lowercase
-        id: repo_lowercase
-        run: echo "name=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower__]')" >> $GITHUB_OUTPUT
-
       - name: Build and push Backend Docker image
         id: build-and-push-backend
         uses: docker/build-push-action@v4
@@ -37,7 +33,7 @@ jobs:
           context: ./backend
           file: ./backend/Dockerfile
           push: true
-          tags: ghcr.io/${{ steps.repo_lowercase.outputs.name }}-backend:${{ github.sha }}
+          tags: ghcr.io/${{ github.repository | lower }}-backend:${{ github.sha }}
 
       - name: Build and push Frontend Docker image
         id: build-and-push-frontend
@@ -46,12 +42,12 @@ jobs:
           context: ./frontend
           file: ./frontend/Dockerfile
           push: true
-          tags: ghcr.io/${{ steps.repo_lowercase.outputs.name }}-frontend:${{ github.sha }}
+          tags: ghcr.io/${{ github.repository | lower }}-frontend:${{ github.sha }}
 
       - name: Update Kubernetes manifests
         run: |
-          sed -i "s|image: ghcr.io/joarfj/argocd-demo-backend:latest|image: ghcr.io/${{ steps.repo_lowercase.outputs.name }}-backend:${{ github.sha }}|" k8s/backend-deployment.yaml
-          sed -i "s|image: ghcr.io/joarfj/argocd-demo-frontend:latest|image: ghcr.io/${{ steps.repo_lowercase.outputs.name }}-frontend:${{ github.sha }}|" k8s/frontend-deployment.yaml
+          sed -i "s|image: ghcr.io/joarfj/argocd-demo-backend:latest|image: ghcr.io/${{ github.repository | lower }}-backend:${{ github.sha }}|" k8s/backend-deployment.yaml
+          sed -i "s|image: ghcr.io/joarfj/argocd-demo-frontend:latest|image: ghcr.io/${{ github.repository | lower }}-frontend:${{ github.sha }}|" k8s/frontend-deployment.yaml
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
           git add k8s/backend-deployment.yaml k8s/frontend-deployment.yaml
