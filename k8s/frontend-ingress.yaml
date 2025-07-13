@@ -8,7 +8,7 @@ spec:
   ingressClassName: nginx
   rules:
   - host: argocd-frontend.com
-  - http:
+    http:
       paths:
       - path: /
         pathType: Prefix
