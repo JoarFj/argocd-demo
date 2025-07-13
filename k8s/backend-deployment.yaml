@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deployment
+  labels:
+    app: backend-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: backend-app
+  template:
+    metadata:
+      labels:
+        app: backend-app
+    spec:
+      containers:
+      - name: backend-app
+        image: ghcr.io/joarfj/argocd-demo-backend:latest # Placeholder, will be updated by CI/CD
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
