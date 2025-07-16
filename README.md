@@ -59,10 +59,10 @@ nodes:
         node-labels: "ingress-ready=true"
   extraPortMappings:
   - containerPort: 80
-    hostPort: 8080
+    hostPort: 80
     protocol: TCP
   - containerPort: 443
-    hostPort: 8443
+    hostPort: 443
     protocol: TCP
 ```
 
@@ -130,7 +130,7 @@ kubectl apply -f argocd-ingress.yaml
 
 ### 6. Access Argo CD UI
 
-Navigate to `https://localhost:8443` in your web browser. You will encounter a certificate warning; you must bypass this warning to proceed.
+Navigate to `https://localhost` in your web browser. You will encounter a certificate warning; you must bypass this warning to proceed.
 
 To get the initial admin password:
 
@@ -169,6 +169,31 @@ If you rename the application (e.g., from `nginx-app` to `python-app`), you will
 kubectl delete application <old-app-name> -n argocd
 ```
 
+### 8. Accessing the Application Frontend
+
+To access the frontend application, you need to add an entry to your local `hosts` file (e.g., `/etc/hosts` on Linux/macOS, or `C:\Windows\System32\drivers\etc\hosts` on Windows) to map the ingress hostname to your local machine.
+
+Add the following line to your `hosts` file:
+
+```
+127.0.0.1 argocd-frontend.com
+```
+
+After saving the `hosts` file, you should be able to access the frontend application by navigating to `http://argocd-frontend.com` in your web browser.
+
+*   **Test Inter-service Connectivity:** Execute a `curl` command from within the frontend pod to the backend service:
+    ```bash
+    kubectl get pods -l app=frontend # Get a frontend pod name
+    kubectl exec <frontend-pod-name> -- curl http://backend-service:80/api/message
+    ```
+    A successful response indicates the backend is reachable. If it fails, try from a `busybox` pod:
+    ```bash
+    kubectl run busybox --image=busybox --restart=Never --rm -it -- /bin/sh
+    # Inside busybox shell:
+    wget -O - http://backend-service:80/api/message
+    exit
+    ```
+*   **Image Tags:** Ensure your deployment manifests (`k8s/*.yaml`) are referencing the correct Docker image tags that include all necessary application and server changes. If you've performed `git revert` operations, you might need to manually update these tags to point to the desired image SHAs.
 
 ### 8. Accessing the Application Frontend
 
@@ -177,10 +202,10 @@ To access the frontend application, you need to add an entry to your local `host
 Add the following line to your `hosts` file:
 
 ```
-127.0.0.1 argocd.local
+127.0.0.1 argocd-frontend.com
 ```
 
-After saving the `hosts` file, you should be able to access the frontend application by navigating to `http://argocd.local:8443` in your web browser.
+After saving the `hosts` file, you should be able to access the frontend application by navigating to `http://argocd-frontend.com` in your web browser.
 
 *   **Test Inter-service Connectivity:** Execute a `curl` command from within the frontend pod to the backend service:
     ```bash
