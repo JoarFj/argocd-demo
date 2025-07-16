@@ -4,7 +4,8 @@ metadata:
   name: frontend-service
 spec:
   selector:
-    app: frontend-app
+    matchLabels:
+      app: frontend-app
   ports:
     - protocol: TCP
       port: 80

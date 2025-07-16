@@ -4,7 +4,8 @@ metadata:
   name: backend-service
 spec:
   selector:
-    app: backend-app
+    matchLabels:
+      app: backend-app
   ports:
     - protocol: TCP
       port: 80
